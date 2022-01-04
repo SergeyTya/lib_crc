@@ -14,7 +14,9 @@ target_include_directories(crc_lib
           
 install(TARGETS crc_lib DESTINATION .)
 
-option(TEST "make google test bin" OFF)
+option(TEST_ALL "make google test bin" OFF)
+option(TEST_CRCLIB "make google test bin" OFF)
+
 option(DEBUG "debug configuration" OFF)
 
 if(DEBUG)
@@ -22,7 +24,7 @@ if(DEBUG)
 endif()
 
 
-if(TEST)
+if(TEST_ALL OR TEST_CRCLIB)
 
  # googletest
 add_subdirectory(
