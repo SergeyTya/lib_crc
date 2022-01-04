@@ -15,6 +15,12 @@ target_include_directories(crc_lib
 install(TARGETS crc_lib DESTINATION .)
 
 option(TEST "make google test bin" OFF)
+option(DEBUG "debug configuration" OFF)
+
+if(DEBUG)
+       set(CMAKE_BUILD_TYPE Debug)
+endif()
+
 
 if(TEST)
 
