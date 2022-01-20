@@ -47,6 +47,7 @@ target_include_directories(
 target_link_libraries(
     test_crclib PRIVATE
     gtest gtest_main
+        lib_crc
 )
 
 target_compile_options(
