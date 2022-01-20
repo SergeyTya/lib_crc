@@ -1,4 +1,5 @@
 #include "crc16.h"
+#include <cstring>
 
 static const unsigned char aucCRCHi[] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
@@ -83,4 +84,19 @@ unsigned short int crc16::usMBCRC16(char * pucFrame, int usLen )
     pucFrame[usLen+1] =static_cast<char> (ucCRCLo) ;
     pucFrame[usLen+2] =static_cast<char> (ucCRCHi) ;
     return static_cast<unsigned short int> ( ucCRCHi << 8 | ucCRCLo );
+}
+
+bool crc16::checkCRC(char *resp,unsigned int len) { //TODO need tobe tested
+
+    if(len<4)return false;
+    char tmp[len];
+    bool res =true;
+    memcpy(tmp, resp, len);
+    crc16::usMBCRC16(tmp, len-2);
+
+    for (int var = 0; var < len; ++var) {
+        if(resp[var]!=tmp[var]) res=false;
+    }
+
+    return res;
 }

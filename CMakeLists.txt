@@ -1,18 +1,18 @@
 
-cmake_minimum_required(VERSION 3.22)
-project(crc_lib)
+cmake_minimum_required(VERSION 3.19)
+project(lib_crc)
 
-add_library( crc_lib SHARED 
+add_library( lib_crc STATIC
 crc16.cpp
 crc16.h
 )
 
 #USE interface to unclude lib path at project target
-target_include_directories(crc_lib
+target_include_directories(lib_crc
           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
           )
           
-install(TARGETS crc_lib DESTINATION .)
+install(TARGETS lib_crc DESTINATION .)
 
 option(TEST_ALL "make google test bin" OFF)
 option(TEST_CRCLIB "make google test bin" OFF)
