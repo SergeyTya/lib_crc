@@ -1,5 +1,6 @@
 #include "crc16.h"
 #include <cstring>
+#include <cstdint>
 
 static const unsigned char aucCRCHi[] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
@@ -67,8 +68,27 @@ static const unsigned char aucCRCLo[] = {
 //    return static_cast<char16_t> ( ucCRCHi << 8 | ucCRCLo );
 //}
 
+unsigned short int crc16::usMBCRC16(std::vector<uint8_t>& v)
+{
+    unsigned char           ucCRCHi = 0xFF;
+    unsigned char           ucCRCLo = 0xFF;
+    int             iIndex;
 
-unsigned short int crc16::usMBCRC16(char * pucFrame, int usLen )
+    for (auto i : v)
+    {
+        iIndex = ucCRCLo ^ i;
+        ucCRCLo = static_cast<unsigned char>( ucCRCHi ^ aucCRCHi[iIndex] );
+        ucCRCHi = aucCRCLo[iIndex];
+    }
+
+    v.push_back(ucCRCLo);
+    v.push_back(ucCRCHi);
+
+    return static_cast<unsigned short int> ( ucCRCHi << 8 | ucCRCLo );
+}
+
+
+unsigned short int crc16::usMBCRC16(uint8_t * pucFrame, int usLen )
 {
     unsigned char           ucCRCHi = 0xFF;
     unsigned char           ucCRCLo = 0xFF;
@@ -86,10 +106,10 @@ unsigned short int crc16::usMBCRC16(char * pucFrame, int usLen )
     return static_cast<unsigned short int> ( ucCRCHi << 8 | ucCRCLo );
 }
 
-bool crc16::checkCRC(char *resp,unsigned int len) { //TODO need tobe tested
+bool crc16::checkCRC(uint8_t *resp,unsigned int len) { //TODO need tobe tested
 
-    if(len<4)return false;
-    char tmp[len];
+    if(len<2)return false;
+    uint8_t tmp[len];
     bool res =true;
     memcpy(tmp, resp, len);
     crc16::usMBCRC16(tmp, len-2);
@@ -99,4 +119,18 @@ bool crc16::checkCRC(char *resp,unsigned int len) { //TODO need tobe tested
     }
 
     return res;
+}
+
+bool crc16::checkCRC(std::vector<uint8_t>& v) { //TODO need tobe tested
+
+    if(v.size()<2)return false;
+    unsigned char           ucCRCHi = *v.end();
+    v.pop_back();
+    unsigned char           ucCRCLo = *v.end();
+    v.pop_back();
+
+    crc16::usMBCRC16(v);
+
+    if(ucCRCHi != *v.end() || ucCRCLo != *(v.end()-1)) return false;
+    return true;
 }
